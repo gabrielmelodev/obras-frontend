@@ -1,0 +1,112 @@
+ <!-- Botão Mobile -->
+<button 
+  (click)="toggleSidebar()" 
+  class="lg:hidden fixed top-4 left-4 z-[2100] bg-white/20 backdrop-blur-lg text-black/50 p-3 rounded-2xl shadow-lg transition-all duration-300 hover:bg-white/30 active:scale-95 flex items-center justify-center"
+>
+  <lucide-icon [name]="isOpen ? 'X' : 'Menu'" class="w-6 h-6"></lucide-icon>
+</button>
+
+<!-- Overlay Mobile -->
+<div *ngIf="isOpen" 
+     (click)="closeSidebar()" 
+     class="fixed inset-0 bg-black/25 backdrop-blur-sm z-40 transition-opacity duration-300">
+</div>
+
+<!-- Sidebar -->
+<aside 
+  class="fixed z-[2100] top-0 left-0 h-full w-64 
+         bg-white/30 backdrop-blur-xl border-r border-white/20 
+         shadow-[0_8px_30px_rgb(0,0,0,0.12)] 
+         flex flex-col transform transition-transform duration-300 ease-in-out
+         rounded-r-2xl
+         lg:translate-x-0 lg:static lg:block"
+  [class.-translate-x-full]="!isOpen"
+  (touchstart)="onTouchStart($event)"
+  (touchmove)="onTouchMove($event)"
+  (touchend)="onTouchEnd()"
+>
+  <!-- Conteúdo principal -->
+  <div class="flex-1 overflow-y-auto p-5 space-y-3">
+    <nav class="space-y-2">
+      <a routerLink="/mapa" routerLinkActive="bg-blue-500/20 text-blue-800 font-medium" (click)="closeSidebar()" 
+         class="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors">
+        <lucide-icon name="Map" class="w-5 h-5"></lucide-icon>
+        <span>Mapa Interativo</span>
+      </a>
+      <a routerLink="/ocorrencias" routerLinkActive="bg-blue-500/20 text-blue-800 font-medium" (click)="closeSidebar()" 
+         class="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors">
+        <lucide-icon name="List" class="w-5 h-5"></lucide-icon>
+        <span>Ocorrências</span>
+      </a>
+      <a routerLink="/users" routerLinkActive="bg-blue-500/20 text-blue-800 font-medium" (click)="closeSidebar()" 
+         class="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors">
+        <lucide-icon name="User" class="w-5 h-5"></lucide-icon>
+        <span>Usuários</span>
+      </a>
+      <a routerLink="/tickets" routerLinkActive="bg-blue-500/20 text-blue-800 font-medium" (click)="closeSidebar()" 
+         class="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors">
+        <lucide-icon name="Ticket" class="w-5 h-5"></lucide-icon>
+        <span>Tickets</span>
+      </a>
+      <a routerLink="/estatisticas" routerLinkActive="bg-blue-500/20 text-blue-800 font-medium" (click)="closeSidebar()" 
+         class="flex items-center gap-3 p-3 rounded-2xl hover:bg-blue-500/10 transition-colors">
+        <lucide-icon name="ChartBar" class="w-5 h-5"></lucide-icon>
+        <span>Estatísticas</span>
+      </a>
+    </nav>
+  </div>
+
+  <!-- Rodapé -->
+  <div class="p-5 border-t border-white/20 mt-auto rounded-t-2xl">
+    <div class="flex items-center gap-3 mb-4">
+      <div class="w-10 h-10 flex items-center justify-center rounded-full bg-blue-100/70 text-blue-600 font-bold shadow-inner">
+        {{ userName.charAt(0).toUpperCase() }}
+      </div>
+      <div class="flex flex-col">
+        <p class="font-semibold text-gray-900">{{ userName }}</p>
+        <p class="text-sm text-gray-600">{{ userSector }}</p>
+      </div>
+    </div>
+
+    <button (click)="confirmLogout()" class="w-full flex items-center gap-2 p-2 rounded-2xl bg-red-500/10 text-red-600 hover:bg-red-500/20 transition-colors">
+      <lucide-icon name="LogOut" class="w-5 h-5"></lucide-icon>
+      <span>Sair</span>
+    </button>
+  </div>
+</aside>
+
+<!-- Modal de Confirmação -->
+<div *ngIf="mostrarLogoutConfirm"
+     class="fixed inset-0 flex items-center justify-center z-[5000] bg-black/60 backdrop-blur-sm transition-opacity duration-300"
+     (click)="cancelLogout()"
+     role="dialog" aria-modal="true">
+
+  <!-- Caixa do modal -->
+  <div (click)="$event.stopPropagation()" 
+       class="bg-white rounded-2xl shadow-2xl p-6 w-80 max-w-[90%] transform transition-all duration-300 scale-95 animate-fadeIn">
+    
+    <!-- Cabeçalho -->
+    <div class="flex items-center gap-2 mb-4">
+      <lucide-icon name="LogOut" class="w-6 h-6 text-red-500"></lucide-icon>
+      <h3 class="text-lg font-semibold text-gray-800">Confirmar Logout</h3>
+    </div>
+
+    <!-- Texto -->
+    <p class="text-sm text-gray-600 mb-6">
+      Tem certeza que deseja sair da sua conta? 
+    </p>
+
+    <!-- Ações -->
+    <div class="flex justify-end gap-2">
+      <button (click)="cancelLogout()" 
+              class="px-4 py-2 rounded-lg border border-gray-300 bg-gray-100 text-gray-700 hover:bg-gray-200 transition-colors">
+        Cancelar
+      </button>
+      <button (click)="logout()" 
+              class="px-4 py-2 rounded-lg bg-red-500 text-white font-medium hover:bg-red-600 transition-colors">
+        Sair
+      </button>
+    </div>
+  </div>
+
+</div>

@@ -1,0 +1,114 @@
+<div class="p-6 space-y-6">
+
+
+  <div class="flex justify-between items-center">
+    <h1 class="text-3xl font-bold text-gray-800">Ocorrências</h1>
+  </div>
+
+
+  <div class="bg-white shadow-md rounded-lg p-5 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-4">
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-600 mb-1">Descrição / Solicitante</label>
+      <input type="text" [(ngModel)]="filters.busca" (input)="aplicarFiltros()" placeholder="Buscar..."
+        class="input outline-0  transition" />
+    </div>
+
+    <!-- Status -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-600 mb-1">Status</label>
+      <select [(ngModel)]="filters.status" (change)="aplicarFiltros()"
+        class="input outline-0 focus:ring-2  transition cursor-pointer">
+        <option value="">Todos</option>
+        <option value="PENDENTE_APROVACAO">Pendente Aprovação</option>
+        <option value="ABERTO">Aberto</option>
+        <option value="EM_ANDAMENTO">Em Andamento</option>
+        <option value="FINALIZADO">Finalizado</option>
+      </select>
+    </div>
+
+    <!-- Category -->
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-600 mb-1">Categoria</label>
+      <input type="text" [(ngModel)]="filters.categoria" (input)="aplicarFiltros()" placeholder="Categoria"
+        class="input outline-0 f transition" />
+    </div>
+
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-600 mb-1">Data Inicial</label>
+      <input type="date" [(ngModel)]="filters.dataInicial" (change)="aplicarFiltros()"
+        class="input outline-0 focus:ring-2 transition" />
+    </div>
+
+
+    <div class="flex flex-col">
+      <label class="text-sm font-medium text-gray-600 mb-1">Data Final</label>
+      <input type="date" [(ngModel)]="filters.dataFinal" (change)="aplicarFiltros()"
+        class="input outline-0 focus:ring-2  transition" />
+    </div>
+  </div>
+
+
+  <div class="flex gap-3 mt-4">
+    <button (click)="alterarStatusEmMassa('EM_ANDAMENTO')"
+      class="flex items-center gap-2 bg-orange-100 hover:bg-orange-200 text-orange-700 px-4 py-2 rounded-lg shadow-sm transition-all duration-300">
+      <!-- Ícone de progresso / construção -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5-6l3 3-3 3" />
+      </svg>
+      <span>Em Andamento</span>
+    </button>
+
+    <button (click)="alterarStatusEmMassa('FINALIZADO')"
+      class="flex items-center gap-2 bg-green-100 hover:bg-green-200 text-green-700 px-4 py-2 rounded-lg shadow-sm transition-all duration-300">
+      <!-- Check / Done icon -->
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>
+      <span>Finalizado</span>
+    </button>
+  </div>
+
+
+
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <div *ngFor="let o of ocorrenciasExibidas" (click)="o.selecionado = !o.selecionado"
+      [class.bg-blue-100]="o.selecionado" [class.border-green-300]="o.selecionado"
+      class="bg-white rounded-xl border-gray-100 shadow-sm hover:shadow-lg transition relative overflow-hidden cursor-pointer border-2">
+
+
+      <div class="flex justify-between items-start p-5 space-x-3">
+        <h2 class="text-lg font-semibold text-gray-800 flex-1">{{ o.descricao }}</h2>
+        <span class="text-xs font-semibold px-3 py-1 rounded-full" [ngClass]="statusClasses[o.status]">
+          {{ statusLabels[o.status] }}
+        </span>
+      </div>
+
+
+      <div class="px-5 pb-5 space-y-2 flex justify-between items-center">
+        <div class="text-sm text-gray-600 space-y-1">
+          <p><span class="font-medium">Solicitante:</span> {{ o.solicitante }}</p>
+          <p><span class="font-medium">Categoria:</span> {{ o.categoria }}</p>
+          <p><span class="font-medium">Data:</span> {{ o.data }}</p>
+        </div>
+
+
+        <input type="checkbox" [(ngModel)]="o.selecionado" class="opacity-0 w-0 h-0" />
+      </div>
+    </div>
+  </div>
+
+
+  <div class="flex justify-center mt-6" *ngIf="ocorrenciasExibidas.length < ocorrenciasFiltradas.length">
+    <button (click)="carregarMais()" [disabled]="loading"
+      class="bg-gray-100 hover:bg-gray-200 text-gray-700 px-6 py-2 rounded-xl shadow-sm transition-all duration-300 flex items-center gap-2">
+      <svg *ngIf="loading" class="w-4 h-4 animate-spin text-gray-500" fill="none" stroke="currentColor"
+        viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke-width="4"></circle>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4l3-3-3-3v4a8 8 0 00-8 8h4l-3 3 3 3h-4z">
+        </path>
+      </svg>
+      {{ loading ? 'Carregando...' : 'Carregar Mais' }}
+    </button>
+  </div>

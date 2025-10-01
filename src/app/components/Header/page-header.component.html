@@ -1,0 +1,26 @@
+<div class="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-8 gap-4 sm:gap-0">
+  <!-- Títulos -->
+  <div>
+    <h1 class="text-xl sm:text-2xl font-semibold tracking-tight text-foreground">
+      {{ title }}
+    </h1>
+    <p class="text-sm text-muted-foreground mt-1" *ngIf="subtitle">
+      {{ subtitle }}
+    </p>
+  </div>
+
+  <!-- Botões -->
+  <div class="flex flex-wrap gap-2 justify-start sm:justify-end">
+    <button (click)="exportar.emit()"
+            class="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition">
+      <lucide-icon name="SendHorizontal" class="h-4 w-4"></lucide-icon>
+      Exportar
+    </button>
+
+    <button (click)="novo.emit()"
+            class="inline-flex items-center gap-2 h-9 px-4 rounded-lg border border-gray-300 hover:bg-gray-100 transition">
+      <lucide-icon name="Plus" class="h-4 w-4"></lucide-icon>
+      Novo Ticket
+    </button>
+  </div>
+</div>

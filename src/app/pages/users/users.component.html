@@ -1,0 +1,147 @@
+<app-usuarios-header (novoUsuario)="abrirModalCriarUsuario()"></app-usuarios-header>
+
+<!-- Botão para abrir opções -->
+<div class="relative mb-4" #menuWrapper>
+  <button (click)="toggleAcoes()" 
+          class="flex items-center gap-2 px-4 py-2 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 shadow-sm hover:bg-white/30 transition">
+    <i-lucide name="settings" class="w-4 h-4"></i-lucide>
+    <span>Ações</span>
+  </button>
+
+  <!-- Menu suspenso -->
+  <div *ngIf="mostrarAcoes"
+       #menuAcoes
+       class="absolute mt-2 right-0 sm:right-auto sm:left-0 w-56 rounded-2xl bg-white/20 backdrop-blur-md border border-white/30 shadow-lg p-3 z-10"
+       tabindex="0"
+       (keydown.escape)="fecharAcoes()">
+    <div class="flex flex-col gap-2">
+      <button (click)="selecionarTodos()" class="flex items-center gap-2 w-full px-3 py-2 rounded-2xl text-left hover:bg-white/30 transition">
+        <lucide-icon name="check-square" class="w-4 h-4"></lucide-icon>
+        Selecionar Todos
+      </button>
+      <button (click)="ativarSelecionados()" class="flex items-center gap-2 w-full px-3 py-2 rounded-2xl text-left hover:bg-green-200/40 transition text-green-700">
+        <lucide-icon name="play-circle" class="w-4 h-4"></lucide-icon>
+        Ativar
+      </button>
+      <button (click)="desativarSelecionados()" class="flex items-center gap-2 w-full px-3 py-2 rounded-2xl text-left hover:bg-red-200/40 transition text-red-700">
+        <lucide-icon name="trash-2" class="w-4 h-4"></lucide-icon>
+        Desativar
+      </button>
+      <button (click)="ordenar('asc')" class="flex items-center gap-2 w-full px-3 py-2 rounded-2xl text-left hover:bg-white/30 transition">
+        <lucide-icon name="arrow-up" class="w-4 h-4"></lucide-icon>
+        Ordenar Crescente
+      </button>
+      <button (click)="ordenar('desc')" class="flex items-center gap-2 w-full px-3 py-2 rounded-2xl text-left hover:bg-white/30 transition">
+        <lucide-icon name="arrow-down" class="w-4 h-4"></lucide-icon>
+        Ordenar Decrescente
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Lista de usuários -->
+<div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+  <app-user-card
+    *ngFor="let u of usuariosFiltrados"
+    [name]="u.nome"
+    [email]="u.email"
+    [phone]="u.telefone"
+    [department]="u.setor"
+    [role]="u.role"
+    [status]="u.status"
+    [iniciais]="getIniciais(u.nome)"
+    [checked]="selecionados.has(u.id)"  
+    (checkChange)="onCheckChange($event, u.id)"
+    (editarClick)="abrirModalEditar(u)">
+  </app-user-card>
+</div>
+
+<!-- Modal Criar -->
+<div *ngIf="modalCriar" 
+     class="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4 backdrop-blur-sm animate-fade-in">
+
+  <div class="bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl w-full max-w-md p-6 relative">
+
+    <!-- Título -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-gray-900">Criar Usuário</h2>
+      <button (click)="modalCriar=false" class="text-gray-500 hover:text-gray-700 transition">✕</button>
+    </div>
+
+    <!-- Inputs -->
+    <div class="flex flex-col gap-4">
+      <input placeholder="Nome" [(ngModel)]="novoUsuario.nome" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <input type="email" placeholder="Email" [(ngModel)]="novoUsuario.email" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <input placeholder="Setor" [(ngModel)]="novoUsuario.setor" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <select [(ngModel)]="novoUsuario.role" 
+              class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-gray-900 placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+        <option value="" disabled selected>Selecione o papel</option>
+        <option value="Admin">Administrador</option>
+        <option value="User">Usuário</option>
+      </select>
+    </div>
+
+    <!-- Botões -->
+    <div class="flex justify-end gap-3 mt-8">
+      <button (click)="modalCriar=false" 
+              class="px-4 py-2 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition shadow-sm">
+        Cancelar
+      </button>
+      <button (click)="criarUsuario()" 
+              class="px-5 py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow-md">
+        Criar
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- Modal Editar -->
+<div *ngIf="modalEditar" 
+     class="fixed inset-0 flex items-center justify-center bg-black/50 z-50 p-4 backdrop-blur-sm animate-fade-in">
+
+  <div class="bg-white/70 backdrop-blur-xl border border-white/20 shadow-2xl rounded-2xl w-full max-w-md p-6 relative">
+
+    <!-- Cabeçalho -->
+    <div class="flex items-center justify-between mb-6">
+      <h2 class="text-xl font-bold text-black">Editar Usuário</h2>
+      <button (click)="modalEditar=null" class="text-white hover:text-gray-300 transition">✕</button>
+    </div>
+
+    <!-- Campos -->
+    <div class="flex flex-col gap-4">
+      <input placeholder="Nome" [(ngModel)]="modalEditar.nome" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-black placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <input type="email" placeholder="Email" [(ngModel)]="modalEditar.email" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-black placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <input placeholder="Setor" [(ngModel)]="modalEditar.setor" 
+             class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-black placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition"/>
+
+      <select [(ngModel)]="modalEditar.role" 
+              class="w-full rounded-2xl border border-gray-300/50 bg-white/30 px-3 py-2 text-black placeholder-gray-400 shadow-sm focus:ring-2 focus:ring-blue-400 focus:border-blue-400 transition">
+        <option value="" disabled>Selecione o papel</option>
+        <option value="Admin">Administrador</option>
+        <option value="User">Usuário</option>
+      </select>
+    </div>
+
+    <!-- Ações -->
+    <div class="flex justify-end gap-3 mt-8">
+      <button (click)="modalEditar=null" 
+              class="px-4 py-2 rounded-2xl bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium transition shadow-sm">
+        Cancelar
+      </button>
+      <button (click)="salvarEdicao()" 
+              class="px-5 py-2 rounded-2xl bg-blue-600 hover:bg-blue-700 text-white font-semibold transition shadow-md">
+        Salvar
+      </button>
+    </div>
+  </div>
+</div>

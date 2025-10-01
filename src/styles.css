@@ -1,1 +1,271 @@
-/* You can add global styles to this file, and also import other style files */
+@import "leaflet/dist/leaflet.css";
+@import "tailwindcss";
+
+
+
+.animate-fadeIn { animation: fadeIn .3s ease-out; }
+  .animate-slideUp { animation: slideUp .3s ease-out; }
+  @keyframes fadeIn {
+    from { opacity: 0; } to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+
+body {
+  border: 0;
+}
+
+.bg-card {
+  background-color: #FFFF; 
+  padding: 1rem;
+  border: 1px solid #e5e7eb; 
+  border-radius: 0.5rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.marker-div {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      
+      color: #fff;
+      font-size: 14px;
+      font-weight: bold;
+    }
+
+
+#map {
+  position: absolute;
+  top: 0;
+  left: 0; 
+  right: 0;
+  bottom: 0;
+  height: 100vh;
+  overflow: hidden;
+  overflow-y: hidden;
+  transition: left 0.3s ease; 
+}
+
+.pulse-marker {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid white;
+}
+
+.pulse-marker::before {
+  content: "";
+  position: absolute;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: rgba(37, 99, 235, 0.4);
+  animation: pulse 1.5s infinite;
+}
+
+.pulse-inner {
+  position: relative;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  z-index: 2;
+}
+
+
+.theme-control {
+  background: white;
+  padding: 6px 10px;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  margin: 10px;
+}
+
+.theme-select {
+  border: none;
+  outline: none;
+  font-size: 14px;
+  background: transparent;
+}
+
+
+/* Animação do "radar pulsando" */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+
+/* Para navegadores baseados em Webkit (Chrome, Edge, Safari) */
+.scroll-custom::-webkit-scrollbar {
+  width: 8px;            /* Largura da barra */
+}
+
+.scroll-custom::-webkit-scrollbar-track {
+  background: #f0f0f0;   /* Fundo da barra */
+  border-radius: 8px;
+}
+
+.scroll-custom::-webkit-scrollbar-thumb {
+  background-color: #DEDEDE; /* Cor do "polegar" */
+  border-radius: 8px;
+  border: 2px solid #f0f0f0; /* Espaçamento interno */
+}
+
+/* Para Firefox */
+.scroll-custom {
+  scrollbar-width: thin;
+  scrollbar-color: #DEDEDE #f0f0f0;
+}
+
+
+
+@media (min-width: 768px) { 
+  #map {
+    left: 16rem; 
+  }
+}
+
+
+@media (max-width: 767px) {
+  #map {
+    left: 0; 
+  }
+}
+
+
+
+/* Ajustes responsivos */
+@media (max-width: 640px) { /* mobile */
+  .justify-between {
+    justify-content: flex-start; /* ou center, se preferir */
+  }
+}
+
+@media (min-width: 641px) and (max-width: 1024px) { /* tablet */
+  .justify-between {
+    justify-content: space-around;
+  }
+}
+
+@media (min-width: 1025px) { /* desktop */
+  .justify-between {
+    justify-content: space-between;
+  }
+
+      .lg\:flex-row {
+        flex-direction: row;
+    }
+}
+
+
+/* ---------- glass system (global) ---------- */
+.glass-container {
+  background: linear-gradient(135deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));
+  backdrop-filter: blur(18px) saturate(130%);
+  -webkit-backdrop-filter: blur(18px) saturate(130%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 8px 30px rgba(2,6,23,0.6), inset 0 1px 0 rgba(255,255,255,0.02);
+  border-radius: 16px;
+  padding: 14px;
+}
+
+/* cards resumo */
+.glass-card {
+  background: linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  backdrop-filter: blur(18px) saturate(120%);
+  -webkit-backdrop-filter: blur(18px) saturate(120%);
+  border: 1px solid rgba(255,255,255,0.06);
+  box-shadow: 0 6px 20px rgba(2,6,23,0.55);
+  border-radius: 12px;
+  padding: 18px;
+  color: #fff;
+}
+
+/* pequeno painel glass (filtros/ordenacao) */
+.glass-surface {
+  background: linear-gradient(180deg, rgba(255,255,255,0.03), rgba(255,255,255,0.01));
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1px solid rgba(255,255,255,0.06);
+  border-radius: 12px;
+}
+
+/* modal overlay blur (fundo escuro + blur) */
+.overlay-blur {
+  position: fixed;
+  inset: 0;
+  background: rgba(6,10,18,0.6);
+  backdrop-filter: blur(6px) saturate(120%);
+  -webkit-backdrop-filter: blur(6px) saturate(120%);
+}
+
+/* modal (glass) */
+.modal-glass {
+  position: relative;
+  border-radius: 14px;
+  background: linear-gradient(135deg, rgba(255,255,255,0.04), rgba(255,255,255,0.02));
+  backdrop-filter: blur(20px) saturate(130%);
+  -webkit-backdrop-filter: blur(20px) saturate(130%);
+  border: 1px solid rgba(255,255,255,0.08);
+  box-shadow: 0 20px 60px rgba(2,6,23,0.7);
+  z-index: 60;
+}
+
+/* inputs glass */
+.glass-input {
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(255,255,255,0.06);
+  background: rgba(255,255,255,0.03);
+  color: #fff;
+  outline: none;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.glass-input::placeholder { color: rgba(255,255,255,0.5); }
+
+/* buttons */
+.btn-ghost {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: transparent;
+  color: rgba(255,255,255,0.9);
+  border: 1px solid rgba(255,255,255,0.06);
+}
+.btn-primary {
+  padding: 8px 14px;
+  border-radius: 10px;
+  background: linear-gradient(90deg,#10b981,#34d399);
+  color: white;
+  border: none;
+  box-shadow: 0 8px 30px rgba(16,185,129,0.18);
+}
+
+/* scrollbar discreto */
+.custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+.custom-scrollbar::-webkit-scrollbar-thumb {
+  background: rgba(255,255,255,0.14);
+  border-radius: 10px;
+}
+
+/* to ensure white text contrast in glass blocks */
+.glass-card, .glass-surface, .modal-glass, .glass-container { color: #fff; }
+
+/* responsive small tweaks */
+@media (max-width: 640px) {
+  .glass-card { padding: 14px; }
+  .modal-glass { margin: 18px; }
+}

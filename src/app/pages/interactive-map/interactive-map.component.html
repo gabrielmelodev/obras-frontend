@@ -1,0 +1,192 @@
+<!-- Botão filtros desktop -->
+<div class="hidden sm:absolute top-4 right-4 z-[2500]">
+    <button
+        class="w-10 h-10 rounded-full flex items-center justify-center border border-gray-300 bg-white shadow hover:shadow-md transition"
+        (click)="toggleFiltros()" title="Filtros">
+        ⚙️
+    </button>
+</div>
+
+<!-- Fundo escuro ao abrir filtros -->
+<div class="fixed inset-0 bg-black/40 z-[1050] transition-opacity" *ngIf="mostrarFiltros" (click)="toggleFiltros()">
+</div>
+
+<div id="drawer"
+    class="sm:hidden fixed bottom-0 left-0 right-0 bg-white/70 backdrop-blur-xl shadow-lg rounded-t-2xl z-[1100] overflow-hidden transition-transform duration-300"
+    [ngStyle]="{'transform': 'translateY(' + drawerTranslateY + 'px)'}" (click)="$event.stopPropagation()">
+    <div class="flex justify-center items-center h-10 cursor-grab" (touchstart)="onTouchStart($event)"
+        (touchmove)="onTouchMove($event)" (touchend)="onTouchEnd($event)">
+        <div class="w-12 h-1.5 bg-gray-400 rounded-full"></div>
+    </div>
+
+    <!-- Conteúdo do drawer -->
+    <div class="p-4 flex flex-col  gap-4 " [style.height.px]="drawerContentHeight">
+        <input type="text" placeholder="Descrição / Solicitante" [(ngModel)]="filtros.busca" (input)="aplicarFiltros()"
+            class="w-full border-none rounded-lg px-3 py-2" />
+        <input type="text" placeholder="Categoria" [(ngModel)]="filtros.categoria" (input)="aplicarFiltros()"
+            class="w-full border-none rounded-lg px-3 py-2" />
+        <select [(ngModel)]="filtros.status" (change)="aplicarFiltros()"
+            class="w-full h-auto border-none rounded-lg px-3 py-2">
+            <option value="">Todos os Status</option>
+            <option value="PENDENTE_APROVACAO">Pendente Aprovação</option>
+            <option value="ABERTO">Aberto</option>
+            <option value="EM_ANDAMENTO">Em Andamento</option>
+            <option value="FINALIZADO">Finalizado</option>
+        </select>
+        <select [(ngModel)]="filtros.bairro" (change)="aplicarFiltros()"
+            class="w-full h-auto border-none rounded-lg px-3 py-2">
+            <option value="">Todos os Bairros</option>
+            <option *ngFor="let b of bairros" [value]="b.nome">{{ b.nome }}</option>
+        </select>
+    </div>
+</div>
+
+
+<!-- Filtros desktop -->
+
+<div
+    class="hidden sm:flex flex-col fixed top-16 right-4 bg-white/50 backdrop-blur-xl border-gray-100 rounded-xl shadow-lg p-4 gap-2 z-[2600] w-64">
+
+    <!-- Campo CEP -->
+    <input type="text" placeholder="Digite o CEP" [(ngModel)]="filtros.cep" (input)="buscarCEP()"
+        class="w-full border-gray-100 outline-none rounded-lg px-3 py-2" />
+
+    <input type="text" placeholder="Descrição / Solicitante" [(ngModel)]="filtros.busca" (input)="aplicarFiltros()"
+        class="w-full border-gray-100 outline-none rounded-lg px-3 py-2" />
+
+    <input type="text" placeholder="Categoria" [(ngModel)]="filtros.categoria" (input)="aplicarFiltros()"
+        class="w-full border-gray-100 outline-none rounded-lg px-3 py-2" />
+
+    <select [(ngModel)]="filtros.status" (change)="aplicarFiltros()"
+        class="w-full border-gray-100 outline-none rounded-lg px-3 py-2">
+        <option value="">Todos os Status</option>
+        <option value="PENDENTE_APROVACAO">Pendente Aprovação</option>
+        <option value="ABERTO">Aberto</option>
+        <option value="EM_ANDAMENTO">Em Andamento</option>
+        <option value="FINALIZADO">Finalizado</option>
+    </select>
+
+    <select [(ngModel)]="filtros.bairro" (change)="aplicarFiltros()"
+        class="w-full border-gray-100 rounded-lg px-3 py-2">
+        <option value="">Todos os Bairros</option>
+        <option *ngFor="let b of bairros" [value]="b.nome">{{ b.nome }}</option>
+    </select>
+</div>
+
+
+<!-- Mapa -->
+<div class="w-[calc(100vw)]  h-[calc(40vh)] z-20">
+    <div id="map" class="  h-full rounded shadow"></div>
+</div>
+
+<button class="absolute rounded-md  z-[1200] bottom-10 right-10 bg-white p-2 shadow" (click)="irParaMinhaLocalizacao()">
+    <lucide-icon name="locate-fixed" size="24" color="#333" title="Ir para minha localização"></lucide-icon>
+</button>
+
+<!-- Toasts -->
+<div class="fixed top-4 right-4 z-[1200]">
+    <div *ngIf="toasts.length > 0" class="bg-black/80 text-white px-4 py-2 rounded shadow">
+        {{ toasts[toasts.length - 1] }}
+    </div>
+</div>
+
+<!-- Modal de ocorrência -->
+<div *ngIf="mostrarModal && selectedOcorrencia"
+    class="fixed inset-0 flex items-center justify-center z-[4000] bg-black/50">
+    <div class="bg-white rounded-lg shadow-lg w-11/12 sm:w-96 p-4 relative">
+        <button (click)="fecharModal()" class="absolute top-2 right-2 text-gray-600 hover:text-gray-900">✕</button>
+
+        <h2 class="text-lg font-bold mb-2">{{ selectedOcorrencia.descricao }}</h2>
+        <p><strong>Solicitante:</strong> {{ selectedOcorrencia.solicitante }}</p>
+        <p><strong>Categoria:</strong> {{ selectedOcorrencia.categoria }}</p>
+        <p><strong>Bairro:</strong> {{ selectedOcorrencia.bairro }}</p>
+        <p><strong>Status:</strong> <span [style.color]="statusColors[selectedOcorrencia.status]">{{
+                selectedOcorrencia.status }}</span></p>
+        <img *ngIf="selectedOcorrencia.imagemUrl" [src]="selectedOcorrencia.imagemUrl" alt="Imagem"
+            class="w-full h-40 object-cover rounded mt-2 shadow" />
+
+
+    </div>
+</div>
+
+<!-- Modal de Cluster -->
+<div *ngIf="mostrarClusterModal" id="clusterModal" tabindex="0"
+    class="fixed inset-0 flex items-center justify-center z-[4000] bg-black/40 backdrop-blur-sm p-4 sm:p-6"
+    (click)="fecharClusterModal()">
+
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-md sm:max-w-2xl lg:max-w-3xl p-6 relative max-h-[90vh] flex flex-col overflow-hidden"
+        (click)="$event.stopPropagation()">
+
+        <!-- Cabeçalho e botão fechar -->
+        <div class="flex justify-between items-center mb-4">
+            <h2 class="text-2xl sm:text-3xl font-bold text-gray-800">
+                Ocorrências no Cluster ({{ ocorrenciasDoCluster.length }})
+            </h2>
+            <button (click)="fecharClusterModal()"
+                class="text-gray-500 hover:text-gray-900 text-3xl font-bold focus:outline-none focus:ring-2 focus:ring-blue-400 rounded-full p-1">
+                ✕
+            </button>
+        </div>
+
+        <!-- Lista com scroll -->
+        <div class="flex-1 overflow-y-auto space-y-4" (scroll)="onScrollCluster($event)">
+
+            <ul class="flex flex-col gap-4">
+                <li *ngFor="let grupo of ocorrenciasPorSolicitante"
+                    class="p-3 bg-gray-50 rounded-2xl shadow hover:bg-gray-100 transition-all border border-gray-100">
+
+                    <!-- Cabeçalho do grupo -->
+                    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-2 gap-2 cursor-pointer"
+                        (click)="grupo.mostrarDetalhes = !grupo.mostrarDetalhes">
+                        <p class="font-semibold text-gray-900">
+                            {{ grupo.solicitante }}
+                            <span class="text-gray-500 font-normal">({{ grupo.ocorrencias.length }})</span>
+                        </p>
+                        <span class="text-blue-500 hover:underline text-sm select-none">
+                            {{ grupo.mostrarDetalhes ? 'Ocultar detalhes ▲' : 'Ver detalhes ▼' }}
+                        </span>
+                    </div>
+
+                    <!-- Detalhes das ocorrências -->
+                    <div *ngIf="grupo.mostrarDetalhes" class="mt-2 space-y-3 animate-slideDown">
+                        <div *ngFor="let o of grupo.ocorrencias"
+                            class="p-3 bg-white rounded-xl shadow-sm border border-gray-200 flex flex-col sm:flex-row sm:items-center gap-4 hover:shadow-md transition-all">
+
+                            <!-- Conteúdo textual -->
+                            <div class="flex-1 space-y-1">
+                                <p class="text-gray-800 font-medium">{{ o.descricao }}</p>
+                                <p class="text-gray-500 text-xs">Bairro: {{ o.bairro }}</p>
+                                <p class="text-gray-500 text-xs">
+                                    Status:
+                                    <span [ngClass]="{
+                    'text-yellow-500 font-semibold': o.status === 'PENDENTE_APROVACAO',
+                    'text-blue-500 font-semibold': o.status === 'ABERTO',
+                    'text-purple-500 font-semibold': o.status === 'EM_ANDAMENTO',
+                    'text-green-500 font-semibold': o.status === 'FINALIZADO'
+                  }">
+                                        {{ o.status }}
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="flex-1 gap-2">
+                                <!-- Imagem -->
+                                <img *ngIf="o.imagemUrl" [src]="o.imagemUrl"
+                                    class="w-full sm:w-32 h-28 object-cover rounded-lg shadow border border-gray-200" />
+
+                                <!-- Botão ir para o local -->
+                                <button (click)="irParaOcorrencia(o)"
+                                    class="mt-2 sm:mt-0 sm:ml-2 px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors">
+                                    Ir para local
+                                </button>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+                </li>
+            </ul>
+
+        </div>
+    </div>
+</div>
