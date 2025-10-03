@@ -64,8 +64,8 @@ export class TicketsComponent implements OnInit {
   verDetalhes(ticket: Ticket) {
     this.ticketSelecionado = ticket;
     this.mensagens = [
-      { autor: 'Usuário A', conteudo: 'Mensagem 1', timestamp: new Date() },
-      { autor: 'Usuário B', conteudo: 'Mensagem 2', timestamp: new Date() },
+      { autor: 'Usuário A', tipo:'texto', conteudo: 'Mensagem 1', timestamp: new Date() },
+      { autor: 'Usuário B', tipo: 'texto', conteudo: 'Mensagem 2', timestamp: new Date() },
     ];
   }
 
@@ -92,11 +92,18 @@ export class TicketsComponent implements OnInit {
     }, 3000);
   }
 
-  enviarMensagem() {
-    if (!this.novaMensagem.trim() || !this.ticketSelecionado) return;
-    this.mensagens.push({ autor: 'Você', conteudo: this.novaMensagem.trim(), timestamp: new Date() });
-    this.novaMensagem = '';
-  }
+enviarMensagem() {
+  if (!this.novaMensagem.trim() || !this.ticketSelecionado) return;
+
+  this.mensagens.push({
+    autor: 'Você',
+    tipo: 'texto',                 // <-- obrigatório
+    conteudo: this.novaMensagem.trim(),
+    timestamp: new Date()
+  });
+
+  this.novaMensagem = '';
+}
 
   fecharModal() {
     this.ticketSelecionado = null;
@@ -118,7 +125,7 @@ export class TicketsComponent implements OnInit {
 
   criarTicket() {
     console.log("Novo Ticket:", this.novoTicket);
-    // salvar no backend
+ 
     this.modalNovoTicket = false;
     this.novoTicket = { titulo: '', descricao: '', prioridade: '' };
   }

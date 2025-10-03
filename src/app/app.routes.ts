@@ -1,13 +1,14 @@
 import { Routes } from '@angular/router';
 import { LoginComponent } from './pages/login/login.component';
-
 import { MapaInterativoComponent } from './pages/interactive-map/interactive-map.component';
-import { OcorrenciasComponent } from './pages/occurrences/occurrencescomponent';
+
 import { LayoutComponent } from './pages/layout/layout.component';
 import { UsuariosComponent } from './pages/users/users.component';
 import { TicketsComponent } from './pages/tickets/tickets.component';
 import { DashboardComponent } from './pages/statistic/statistic.component';
 
+import { OcorrenciasComponent } from './pages/occurrences/occurrencescomponent';
+import { ErrorComponent } from './pages/error/error.component';
 
 export const routes: Routes = [
   { path: 'login', component: LoginComponent },
@@ -15,7 +16,7 @@ export const routes: Routes = [
     path: '',
     component: LayoutComponent,
     children: [
-      { path: 'interactive-map', component: MapaInterativoComponent },
+      { path: 'interactive-map', component: MapaInterativoComponent }, // ajustado para 'mapa'
       { path: 'occurrences', component: OcorrenciasComponent },
       { path: 'users', component: UsuariosComponent },
       { path: 'tickets', component: TicketsComponent },
@@ -23,5 +24,8 @@ export const routes: Routes = [
       { path: '', redirectTo: 'mapa', pathMatch: 'full' }
     ]
   },
-  { path: '**', redirectTo: 'login' }
+  // Rota de erro genérica
+  { path: 'error', component: ErrorComponent },
+  // Qualquer outra rota cai aqui
+  { path: '**', redirectTo: 'error' }
 ];

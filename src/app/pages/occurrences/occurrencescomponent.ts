@@ -113,7 +113,7 @@ export class OcorrenciasComponent {
       this.page++;
       this.atualizarExibidas();
       this.loading = false;
-    }, 500); // ajustado para teste rápido
+    }, 1000); // ajustado para teste rápido
   }
 
   alterarStatusEmMassa(status: Ocorrencia['status']) {

@@ -26,8 +26,10 @@ export interface Usuario {
 
 export interface MensagemChat {
   autor: string;
-  conteudo: string;
   timestamp: Date;
+  tipo: 'texto' | 'arquivo';   
+  conteudo?: string;           
+  arquivos?: ArquivoPreview[]
 }
 
 export interface AlterarStatusEvent {
@@ -36,3 +38,10 @@ export interface AlterarStatusEvent {
 }
 
 type TemaMapa = 'Padrão' | 'Escuro' | 'Claro' | 'Satélite';
+
+export interface ArquivoPreview {
+  file: File;
+  name: string;
+  preview?: string;
+  tipo: 'image' | 'pdf' | 'word' | 'excel' | 'ppt' | 'outro';
+}

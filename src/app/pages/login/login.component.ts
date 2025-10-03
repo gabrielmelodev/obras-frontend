@@ -14,19 +14,22 @@ import { HttpClientModule } from '@angular/common/http';
 export class LoginComponent {
   email: string = '';
   password: string = '';
-  errorMessage: string = '';
   loading: boolean = false;
+
+  anoAtual: number = new Date().getFullYear();
+  versao: string = "1.0.0"; 
+
+  private toastTimeout: any;
 
   constructor(private authService: AuthService, private router: Router) {}
 
   onSubmit(form: NgForm) {
     if (form.invalid) {
-      this.showError('Preencha todos os campos corretamente');
+      this.showToast('Preencha todos os campos corretamente');
       return;
     }
 
     this.loading = true;
-    this.errorMessage = '';
 
     this.authService.login(this.email, this.password).subscribe({
       next: (res: AuthResponse) => this.handleSuccess(res),
@@ -40,24 +43,22 @@ export class LoginComponent {
     if (res.user.role === 'ADMIN_MASTER') {
       localStorage.setItem('token', res.token);
       localStorage.setItem('user', JSON.stringify(res.user));
-      this.router.navigate(['/dashboard']);
+      this.router.navigate(['/interactive-map']);
     } else {
-      this.showError('Acesso negado. Usuário não é administrador.');
+      this.showToast('Acesso negado. Usuário não é administrador.');
     }
   }
 
   private handleError(err: any) {
     this.loading = false;
 
-    
     if (err?.status === 401) {
-      this.showError('E-mail ou senha inválidos');
+      this.showToast('E-mail ou senha inválidos');
     } else {
-      this.showError('Ocorreu um erro. Tente novamente mais tarde.');
+      this.showToast('Ocorreu um erro. Tente novamente mais tarde.');
     }
   }
 
-  
   scrollIntoView(event: FocusEvent) {
     const target = event.target as HTMLElement;
     setTimeout(() => {
@@ -65,11 +66,29 @@ export class LoginComponent {
     }, 300);
   }
 
- 
-  private showError(message: string, duration: number = 5000) {
-    this.errorMessage = message;
-    setTimeout(() => {
-      this.errorMessage = '';
+  
+  private showToast(message: string, duration: number = 4000) {
+    
+    if (this.toastTimeout) {
+      clearTimeout(this.toastTimeout);
+      const existing = document.getElementById('login-toast');
+      if (existing) existing.remove();
+    }
+
+    const toast = document.createElement('div');
+    toast.id = 'login-toast';
+    toast.textContent = message;
+    toast.className = `
+      fixed top-8 right-4 px-4 py-3 rounded-2xl shadow-lg text-sm font-medium
+      bg-red-500 text-white backdrop-blur-md bg-opacity-90
+      animate__animated animate__fadeInDown z-50
+    `;
+    document.body.appendChild(toast);
+
+    this.toastTimeout = setTimeout(() => {
+      toast.classList.remove('animate__fadeInDown');
+      toast.classList.add('animate__fadeOutUp');
+      toast.addEventListener('animationend', () => toast.remove());
     }, duration);
   }
 }
